@@ -2,6 +2,10 @@
 PlayerPlugin=MediaPlayer
 PlayerName=Default
 PlayingDotAlpha=200
+SkinVersionCode=10000
+SkinVersionLabel=1.0.0
+UpdateManifestUrl=https://raw.githubusercontent.com/SunkenInTime/rainmeter-touch-player/master/latest.ini
+LatestDownloadUrl=https://github.com/SunkenInTime/rainmeter-touch-player/releases/latest/download/RetroTouchPlayer.rmskin
 
 DisplayFont=CozetteVector
 ; Icons match reference-website/index.html SVGs (24 viewBox, scaled to IconSize)
@@ -39,6 +43,11 @@ ClockX=314
 RecordDotInsetX=24
 RecordDotInsetY=22
 RecordDotSize=10
+UpdateBadgeX=18
+UpdateBadgeY=16
+UpdateBadgeWidth=70
+UpdateBadgeHeight=18
+UpdateBadgeRadius=9
 
 ProgressHeight=3
 
@@ -71,6 +80,9 @@ GridColor=255,255,255,10
 TextColor=255,255,255,255
 IconColor=208,208,208,255
 RecordColor=255,59,48,255
+UpdateBadgeFill=0,0,0,170
+UpdateBadgeStroke=255,59,48,210
+UpdateBadgeTextColor=255,255,255,255
 
 ProgressBase=255,255,255,13
 ProgressFill=255,255,255,255

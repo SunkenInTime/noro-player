@@ -1,0 +1,53 @@
+name: Release Rainmeter Skin
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Prepare RMSKIN package layout
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path "build/package/Skins" -Force | Out-Null
+          Copy-Item -Path "RetroTouchPlayer" -Destination "build/package/Skins/RetroTouchPlayer" -Recurse -Force
+          Copy-Item -Path "RMSKIN.ini" -Destination "build/package/RMSKIN.ini" -Force
+
+      - name: Derive package version
+        id: version
+        shell: pwsh
+        run: |
+          $releaseVersion = "${{ github.ref_name }}" -replace "^v", ""
+          "value=$releaseVersion" >> $env:GITHUB_OUTPUT
+
+      - name: Build .rmskin package
+        id: builder
+        uses: 2bndy5/rmskin-action@v2.0.3
+        with:
+          path: build/package
+          dir-out: build/dist
+          title: RetroTouchPlayer
+          version: ${{ steps.version.outputs.value }}
+          author: SunkenInTime
+
+      - name: Normalize release asset name
+        shell: pwsh
+        run: |
+          Copy-Item -Path "build/dist/${{ steps.builder.outputs.arc_name }}" -Destination "build/dist/RetroTouchPlayer.rmskin" -Force
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/dist/RetroTouchPlayer.rmskin
+          generate_release_notes: true
+          name: RetroTouchPlayer ${{ github.ref_name }}
