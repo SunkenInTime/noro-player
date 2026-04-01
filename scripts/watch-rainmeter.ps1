@@ -45,6 +45,109 @@ function Resolve-RainmeterExecutable {
     return $null
 }
 
+function Test-FileIsLockedForWrite {
+    param([string]$Path)
+
+    if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) {
+        return $false
+    }
+
+    try {
+        $stream = [System.IO.File]::Open($Path, [System.IO.FileMode]::Open, [System.IO.FileAccess]::ReadWrite, [System.IO.FileShare]::None)
+        $stream.Dispose()
+        return $false
+    }
+    catch [System.UnauthorizedAccessException] {
+        return $true
+    }
+    catch [System.IO.IOException] {
+        return $true
+    }
+}
+
+function Get-RelativePath {
+    param(
+        [string]$BasePath,
+        [string]$TargetPath
+    )
+
+    $normalizedBasePath = [System.IO.Path]::GetFullPath($BasePath).TrimEnd('\') + '\'
+    $normalizedTargetPath = [System.IO.Path]::GetFullPath($TargetPath)
+
+    $baseUri = [System.Uri]::new($normalizedBasePath)
+    $targetUri = [System.Uri]::new($normalizedTargetPath)
+
+    return [System.Uri]::UnescapeDataString($baseUri.MakeRelativeUri($targetUri).ToString().Replace('/', '\'))
+}
+
+function Sync-FontFiles {
+    param(
+        [string]$SourcePath,
+        [string]$DestinationPath
+    )
+
+    $sourceFontsPath = Join-Path $SourcePath '@Resources\Fonts'
+    $destinationFontsPath = Join-Path $DestinationPath '@Resources\Fonts'
+
+    if (-not (Test-Path -LiteralPath $sourceFontsPath)) {
+        return
+    }
+
+    New-Item -ItemType Directory -Path $destinationFontsPath -Force | Out-Null
+
+    $sourceFontFiles = @(Get-ChildItem -LiteralPath $sourceFontsPath -File -Recurse)
+    $sourceFontFilesByRelativePath = @{}
+
+    foreach ($sourceFontFile in $sourceFontFiles) {
+        $relativePath = Get-RelativePath -BasePath $sourceFontsPath -TargetPath $sourceFontFile.FullName
+        $sourceFontFilesByRelativePath[$relativePath] = $sourceFontFile
+
+        $destinationFontPath = Join-Path $destinationFontsPath $relativePath
+        $destinationFontDirectory = Split-Path -Path $destinationFontPath -Parent
+        New-Item -ItemType Directory -Path $destinationFontDirectory -Force | Out-Null
+
+        $copyRequired = $true
+
+        if (Test-Path -LiteralPath $destinationFontPath -PathType Leaf) {
+            $destinationFontFile = Get-Item -LiteralPath $destinationFontPath
+            $copyRequired = $destinationFontFile.Length -ne $sourceFontFile.Length -or $destinationFontFile.LastWriteTimeUtc -ne $sourceFontFile.LastWriteTimeUtc
+
+            if ($copyRequired -and (Test-FileIsLockedForWrite -Path $destinationFontPath)) {
+                Write-Warning "Skipping locked font file '$relativePath'."
+                continue
+            }
+        }
+
+        if (-not $copyRequired) {
+            continue
+        }
+
+        Copy-Item -LiteralPath $sourceFontFile.FullName -Destination $destinationFontPath -Force
+        (Get-Item -LiteralPath $destinationFontPath).LastWriteTimeUtc = $sourceFontFile.LastWriteTimeUtc
+    }
+
+    if (-not (Test-Path -LiteralPath $destinationFontsPath)) {
+        return
+    }
+
+    $destinationFontFiles = @(Get-ChildItem -LiteralPath $destinationFontsPath -File -Recurse)
+
+    foreach ($destinationFontFile in $destinationFontFiles) {
+        $relativePath = Get-RelativePath -BasePath $destinationFontsPath -TargetPath $destinationFontFile.FullName
+
+        if ($sourceFontFilesByRelativePath.ContainsKey($relativePath)) {
+            continue
+        }
+
+        if (Test-FileIsLockedForWrite -Path $destinationFontFile.FullName) {
+            Write-Warning "Skipping locked font file '$relativePath'."
+            continue
+        }
+
+        Remove-Item -LiteralPath $destinationFontFile.FullName -Force
+    }
+}
+
 function Invoke-SkinSync {
     param(
         [string]$SourcePath,
@@ -58,13 +161,16 @@ function Invoke-SkinSync {
     New-Item -ItemType Directory -Path $DestinationPath -Force | Out-Null
 
     Write-Host ("[{0:HH:mm:ss}] Syncing skin files..." -f (Get-Date))
-    & robocopy $SourcePath $DestinationPath /MIR /R:1 /W:1 /NFL /NDL /NJH /NJS /NP | Out-Null
+    $sourceFontsPath = Join-Path $SourcePath '@Resources\Fonts'
+
+    & robocopy $SourcePath $DestinationPath /MIR /R:1 /W:1 /XD $sourceFontsPath /NFL /NDL /NJH /NJS /NP | Out-Null
     $exitCode = $LASTEXITCODE
 
     if ($exitCode -gt 7) {
         throw "Robocopy failed with exit code $exitCode."
     }
 
+    Sync-FontFiles -SourcePath $SourcePath -DestinationPath $DestinationPath
     Write-Host ("[{0:HH:mm:ss}] Sync complete." -f (Get-Date))
 }
 

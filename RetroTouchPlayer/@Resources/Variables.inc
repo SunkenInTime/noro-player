@@ -23,11 +23,11 @@ ScreenRadiusBottom=4
 
 ; Track title: centered on bottom overlay row (ScreenMask coords; matches reference-website)
 TitleAreaX=156
-TitleAreaY=166
+TitleAreaY=170
 TitleAreaWidth=288
 
-; Bottom overlay row: aligned with reference padding (~14px from screen bottom)
-InfoY=180
+; Bottom overlay row: tighter to progress bar (less bottom padding than reference 14px)
+InfoY=184
 ElapsedX=26
 ; Status text (PAUSED/STANDBY): aligns with clock row; record dot uses RecordDot* below
 StatusTopY=42
