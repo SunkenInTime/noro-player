@@ -3,7 +3,7 @@ PlayerPlugin=MediaPlayer
 PlayerName=Default
 PlayingDotAlpha=200
 
-DisplayFont=Geist Mono
+DisplayFont=CozetteVector
 ; Icons match reference-website/index.html SVGs (24 viewBox, scaled to IconSize)
 IconSize=28
 
