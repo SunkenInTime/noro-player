@@ -115,9 +115,9 @@ jobs:
             Set-Content -Path $Path -Value $updated -NoNewline
           }
 
-          Update-FileValue -Path "RetroTouchPlayer/Player.ini" -Pattern "(?m)^Version=.*$" -Replacement "Version=$releaseVersion"
-          Update-FileValue -Path "RetroTouchPlayer/@Resources/Variables.inc" -Pattern "(?m)^SkinVersionCode=.*$" -Replacement "SkinVersionCode=$releaseCode"
-          Update-FileValue -Path "RetroTouchPlayer/@Resources/Variables.inc" -Pattern "(?m)^SkinVersionLabel=.*$" -Replacement "SkinVersionLabel=$releaseVersion"
+          Update-FileValue -Path "NoroPlayer/Player.ini" -Pattern "(?m)^Version=.*$" -Replacement "Version=$releaseVersion"
+          Update-FileValue -Path "NoroPlayer/@Resources/Variables.inc" -Pattern "(?m)^SkinVersionCode=.*$" -Replacement "SkinVersionCode=$releaseCode"
+          Update-FileValue -Path "NoroPlayer/@Resources/Variables.inc" -Pattern "(?m)^SkinVersionLabel=.*$" -Replacement "SkinVersionLabel=$releaseVersion"
           Update-FileValue -Path "latest.ini" -Pattern "(?m)^VersionCode=.*$" -Replacement "VersionCode=$releaseCode"
           Update-FileValue -Path "latest.ini" -Pattern "(?m)^VersionLabel=.*$" -Replacement "VersionLabel=$releaseVersion"
           Update-FileValue -Path "RMSKIN.ini" -Pattern "(?m)^Version=.*$" -Replacement "Version=$releaseVersion"
@@ -132,7 +132,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add RetroTouchPlayer/Player.ini RetroTouchPlayer/@Resources/Variables.inc latest.ini RMSKIN.ini
+          git add NoroPlayer/Player.ini NoroPlayer/@Resources/Variables.inc latest.ini RMSKIN.ini
           git commit -m "Release v$releaseVersion"
           git push origin HEAD:$branchName
 
@@ -141,7 +141,7 @@ jobs:
         run: |
           New-Item -ItemType Directory -Path "build/package/Skins" -Force | Out-Null
           New-Item -ItemType Directory -Path "build/dist" -Force | Out-Null
-          Copy-Item -Path "RetroTouchPlayer" -Destination "build/package/Skins/RetroTouchPlayer" -Recurse -Force
+          Copy-Item -Path "NoroPlayer" -Destination "build/package/Skins/NoroPlayer" -Recurse -Force
           Copy-Item -Path "RMSKIN.ini" -Destination "build/package/RMSKIN.ini" -Force
 
       - name: Create release tag
@@ -186,7 +186,7 @@ jobs:
         id: builder
         shell: pwsh
         run: |
-          $archiveName = "RetroTouchPlayer_${{ steps.version.outputs.value }}.rmskin"
+          $archiveName = "NoroPlayer_${{ steps.version.outputs.value }}.rmskin"
           & "./build/rmskin-builder/bin/rmskin-build" --path build/package --dir-out build/dist --title "Noro Player" --version "${{ steps.version.outputs.value }}" --author SunkenInTime
 
           if (-not (Test-Path "build/dist/$archiveName")) {
@@ -198,20 +198,20 @@ jobs:
       - name: Verify packaged font integrity
         shell: pwsh
         run: |
-          $packageFont = "build/package/Skins/RetroTouchPlayer/@Resources/Fonts/CozetteVector.ttf"
+          $packageFont = "build/package/Skins/NoroPlayer/@Resources/Fonts/CozetteVector.ttf"
           $archivePath = "build/dist/${{ steps.builder.outputs.arc_name }}"
 
-          python -c "import hashlib, sys, zipfile; archive_path, package_font = sys.argv[1:3]; entry_name = 'Skins/RetroTouchPlayer/@Resources/Fonts/CozetteVector.ttf'; packaged_font = open(package_font, 'rb').read(); archive_font = zipfile.ZipFile(archive_path).read(entry_name); packaged_hash = hashlib.sha256(packaged_font).hexdigest(); archive_hash = hashlib.sha256(archive_font).hexdigest(); print(f'packaged source sha256={packaged_hash}'); print(f'archive entry sha256={archive_hash}'); sys.exit(0 if packaged_hash == archive_hash else 1)" $archivePath $packageFont
+          python -c "import hashlib, sys, zipfile; archive_path, package_font = sys.argv[1:3]; entry_name = 'Skins/NoroPlayer/@Resources/Fonts/CozetteVector.ttf'; packaged_font = open(package_font, 'rb').read(); archive_font = zipfile.ZipFile(archive_path).read(entry_name); packaged_hash = hashlib.sha256(packaged_font).hexdigest(); archive_hash = hashlib.sha256(archive_font).hexdigest(); print(f'packaged source sha256={packaged_hash}'); print(f'archive entry sha256={archive_hash}'); sys.exit(0 if packaged_hash == archive_hash else 1)" $archivePath $packageFont
 
       - name: Normalize release asset name
         shell: pwsh
         run: |
-          Copy-Item -Path "build/dist/${{ steps.builder.outputs.arc_name }}" -Destination "build/dist/RetroTouchPlayer.rmskin" -Force
+          Copy-Item -Path "build/dist/${{ steps.builder.outputs.arc_name }}" -Destination "build/dist/NoroPlayer.rmskin" -Force
 
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          files: build/dist/RetroTouchPlayer.rmskin
+          files: build/dist/NoroPlayer.rmskin
           generate_release_notes: true
           name: Noro Player ${{ steps.version.outputs.tag }}
           tag_name: ${{ steps.version.outputs.tag }}

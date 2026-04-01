@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [string]$SourceRoot,
-    [string]$TargetRoot = (Join-Path $env:USERPROFILE 'Documents\Rainmeter\Skins\RetroTouchPlayer'),
+    [string]$TargetRoot = (Join-Path $env:USERPROFILE 'Documents\Rainmeter\Skins\NoroPlayer'),
     [string]$RainmeterExe,
     [switch]$Watch,
     [switch]$SkipRefresh,
@@ -14,7 +14,7 @@ $ErrorActionPreference = 'Stop'
 $workspaceRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 
 if (-not $PSBoundParameters.ContainsKey('SourceRoot')) {
-    $SourceRoot = Join-Path $workspaceRoot 'RetroTouchPlayer'
+    $SourceRoot = Join-Path $workspaceRoot 'NoroPlayer'
 }
 
 $SourceRoot = [System.IO.Path]::GetFullPath($SourceRoot)

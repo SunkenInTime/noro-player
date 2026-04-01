@@ -6,8 +6,8 @@ This skin shows an in-app `UPDATE` badge when `latest.ini` advertises a newer `V
 
 These files stay in sync for every release:
 
-- `RetroTouchPlayer/Player.ini`
-- `RetroTouchPlayer/@Resources/Variables.inc`
+- `NoroPlayer/Player.ini`
+- `NoroPlayer/@Resources/Variables.inc`
 - `latest.ini`
 - `RMSKIN.ini`
 
@@ -35,7 +35,7 @@ The workflow will:
 3. Update `Player.ini`, `Variables.inc`, `latest.ini`, and `RMSKIN.ini`.
 4. Commit that version bump back to the selected branch.
 5. Create the matching tag, such as `v1.0.1`.
-6. Build `RetroTouchPlayer.rmskin`.
+6. Build `NoroPlayer.rmskin`.
 7. Publish the GitHub Release and upload the fixed asset filename.
 
 Examples:
@@ -62,13 +62,13 @@ git push origin v1.0.1
 
 When a `v*` tag is pushed, `.github/workflows/release.yml`:
 
-1. Stages the skin into a temporary `Skins/RetroTouchPlayer` package layout.
+1. Stages the skin into a temporary `Skins/NoroPlayer` package layout.
 2. Builds a `.rmskin` package with `2bndy5/rmskin-action`.
-3. Uploads a fixed-name asset: `RetroTouchPlayer.rmskin`.
+3. Uploads a fixed-name asset: `NoroPlayer.rmskin`.
 
 That fixed filename is important because the skin links to:
 
-`https://github.com/SunkenInTime/noro-player/releases/latest/download/RetroTouchPlayer.rmskin`
+`https://github.com/SunkenInTime/noro-player/releases/latest/download/NoroPlayer.rmskin`
 
 ## Update checker source
 
@@ -76,4 +76,4 @@ The skin reads the latest version from:
 
 `https://raw.githubusercontent.com/SunkenInTime/noro-player/master/latest.ini`
 
-If you ever change the repository owner, name, or default branch, update the URLs in `RetroTouchPlayer/@Resources/Variables.inc`.
+If you ever change the repository owner, name, or default branch, update the URLs in `NoroPlayer/@Resources/Variables.inc`.

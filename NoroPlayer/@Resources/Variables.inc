@@ -5,7 +5,7 @@ PlayingDotAlpha=200
 SkinVersionCode=10202
 SkinVersionLabel=1.2.2
 UpdateManifestUrl=https://raw.githubusercontent.com/SunkenInTime/noro-player/master/latest.ini
-LatestDownloadUrl=https://github.com/SunkenInTime/noro-player/releases/latest/download/RetroTouchPlayer.rmskin
+LatestDownloadUrl=https://github.com/SunkenInTime/noro-player/releases/latest/download/NoroPlayer.rmskin
 
 DisplayFont=CozetteVector
 ; Icons match reference-website/index.html SVGs (24 viewBox, scaled to IconSize)
