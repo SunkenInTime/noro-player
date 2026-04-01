@@ -10,7 +10,7 @@ ShellWidth=340
 ShellHeight=356
 ShellRadius=51
 ; Full-skin grain overlay (Player.ini GrainOverlay); 0-255
-GrainAlpha=230
+GrainAlpha=7.2
 
 ScreenX=14
 ScreenY=14
