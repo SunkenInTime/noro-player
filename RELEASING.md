@@ -68,12 +68,12 @@ When a `v*` tag is pushed, `.github/workflows/release.yml`:
 
 That fixed filename is important because the skin links to:
 
-`https://github.com/SunkenInTime/rainmeter-touch-player/releases/latest/download/RetroTouchPlayer.rmskin`
+`https://github.com/SunkenInTime/noro-player/releases/latest/download/RetroTouchPlayer.rmskin`
 
 ## Update checker source
 
 The skin reads the latest version from:
 
-`https://raw.githubusercontent.com/SunkenInTime/rainmeter-touch-player/master/latest.ini`
+`https://raw.githubusercontent.com/SunkenInTime/noro-player/master/latest.ini`
 
 If you ever change the repository owner, name, or default branch, update the URLs in `RetroTouchPlayer/@Resources/Variables.inc`.

@@ -4,8 +4,8 @@ PlayerName=Default
 PlayingDotAlpha=200
 SkinVersionCode=10202
 SkinVersionLabel=1.2.2
-UpdateManifestUrl=https://raw.githubusercontent.com/SunkenInTime/rainmeter-touch-player/master/latest.ini
-LatestDownloadUrl=https://github.com/SunkenInTime/rainmeter-touch-player/releases/latest/download/RetroTouchPlayer.rmskin
+UpdateManifestUrl=https://raw.githubusercontent.com/SunkenInTime/noro-player/master/latest.ini
+LatestDownloadUrl=https://github.com/SunkenInTime/noro-player/releases/latest/download/RetroTouchPlayer.rmskin
 
 DisplayFont=CozetteVector
 ; Icons match reference-website/index.html SVGs (24 viewBox, scaled to IconSize)
