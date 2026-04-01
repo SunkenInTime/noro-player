@@ -1,0 +1,12 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Rainmeter Watcher",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"${workspaceFolder}\\scripts\\watch-rainmeter.ps1\" -Watch",
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}

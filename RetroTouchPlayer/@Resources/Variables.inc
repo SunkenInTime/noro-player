@@ -10,7 +10,7 @@ ShellWidth=340
 ShellHeight=356
 ShellRadius=51
 ; Full-skin grain overlay (Player.ini GrainOverlay); 0-255
-GrainAlpha=88
+GrainAlpha=0
 
 ScreenX=14
 ScreenY=14
@@ -72,6 +72,8 @@ ProgressFill=255,255,255,255
 
 GrilleFill=26,26,26,255
 GrilleStroke=0,0,0,255
+; Reference .grille: ~1px black dots @ 0.6 opacity — modest dot size + tint for legibility
+GrilleDotTint=0,0,0,165
 
 ; Match reference .btn: flat #1a1a1a, border #0a0a0a, box-shadow inset 0 1px 2px rgba(255,255,255,.05)
 ButtonFill=26,26,26,255
