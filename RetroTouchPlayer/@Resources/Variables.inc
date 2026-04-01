@@ -20,15 +20,16 @@ ScreenHeight=188
 ScreenRadiusTop=36
 ScreenRadiusBottom=4
 
-; Track title: inset readout on the screen (same horizontal padding as bottom row: ElapsedX - ScreenX)
-TitleAreaX=12
-TitleAreaY=28
+; Track title: centered on bottom overlay row (ScreenMask coords; matches reference-website)
+TitleAreaX=156
+TitleAreaY=166
 TitleAreaWidth=288
 
 ; Bottom overlay row: aligned with reference padding (~14px from screen bottom)
 InfoY=180
 ElapsedX=26
-StatusTextX=170
+; Status label + record dot: top-right of screen (skin coords; same right edge as clock)
+StatusTopY=42
 ClockX=314
 
 ProgressHeight=3

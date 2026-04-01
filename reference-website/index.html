@@ -84,7 +84,8 @@
             z-index: 10;
             padding: 14px 12px;
             display: flex;
-            justify-content: center;
+            justify-content: flex-end;
+            align-items: center;
             color: #fff;
             font-size: 10px;
             text-transform: uppercase;
@@ -103,13 +104,19 @@
             letter-spacing: -0.01em;
         }
 
+        .overlay-bottom .song-title-wrap {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            min-width: 0;
+            padding-left: 4px;
+            padding-right: 4px;
+        }
+
         .status-container {
             display: flex;
             align-items: center;
-            justify-content: center;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
+            justify-content: flex-end;
             width: fit-content;
             font-size: 9px;
             font-weight: 600;
@@ -284,17 +291,19 @@
             <div id="visual" class="screen-visual"></div>
 
             <div class="overlay-top">
-                <div class="song-title" id="uploadTrigger" title="Click to upload audio">
-                    <span class="text">IMPORT AUDIO</span>
+                <div class="status-container">
+                    <span id="dot" class="status-dot"></span>
+                    <span id="status-label">Standby</span>
                 </div>
             </div>
 
             <div class="overlay-bottom">
                 <div id="time-display" class="w-16 tabular-nums">00:00</div>
 
-                <div class="status-container">
-                    <span id="dot" class="status-dot"></span>
-                    <span id="status-label">Standby</span>
+                <div class="song-title-wrap">
+                    <div class="song-title" id="uploadTrigger" title="Click to upload audio">
+                        <span class="text">IMPORT AUDIO</span>
+                    </div>
                 </div>
 
                 <div id="clock" class="w-16 text-right tabular-nums">03:52 AM</div>
