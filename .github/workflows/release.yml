@@ -140,6 +140,7 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Path "build/package/Skins" -Force | Out-Null
+          New-Item -ItemType Directory -Path "build/dist" -Force | Out-Null
           Copy-Item -Path "RetroTouchPlayer" -Destination "build/package/Skins/RetroTouchPlayer" -Recurse -Force
           Copy-Item -Path "RMSKIN.ini" -Destination "build/package/RMSKIN.ini" -Force
 
