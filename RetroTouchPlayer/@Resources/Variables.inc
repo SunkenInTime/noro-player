@@ -2,8 +2,8 @@
 PlayerPlugin=MediaPlayer
 PlayerName=Default
 PlayingDotAlpha=200
-SkinVersionCode=10000
-SkinVersionLabel=1.0.0
+SkinVersionCode=10100
+SkinVersionLabel=1.1.0
 UpdateManifestUrl=https://raw.githubusercontent.com/SunkenInTime/rainmeter-touch-player/master/latest.ini
 LatestDownloadUrl=https://github.com/SunkenInTime/rainmeter-touch-player/releases/latest/download/RetroTouchPlayer.rmskin
 
