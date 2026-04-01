@@ -4,6 +4,16 @@ on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: Which version bump to publish
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
 
 permissions:
   contents: write
@@ -15,6 +25,116 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Derive package version
+        id: version
+        shell: pwsh
+        run: |
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            $currentVersionLine = (Get-Content "latest.ini" | Where-Object { $_ -match "^VersionLabel=" } | Select-Object -First 1)
+            if (-not $currentVersionLine) {
+              throw "Could not determine the current version from latest.ini."
+            }
+
+            $currentVersion = $currentVersionLine -replace "^VersionLabel=", ""
+            $versionParts = $currentVersion.Split(".")
+            if ($versionParts.Count -ne 3) {
+              throw "Expected semantic version format in latest.ini, got '$currentVersion'."
+            }
+
+            $major = [int]$versionParts[0]
+            $minor = [int]$versionParts[1]
+            $patch = [int]$versionParts[2]
+            $releaseType = "${{ github.event.inputs.release_type }}"
+
+            switch ($releaseType) {
+              "major" {
+                $major += 1
+                $minor = 0
+                $patch = 0
+              }
+              "minor" {
+                $minor += 1
+                $patch = 0
+              }
+              "patch" {
+                $patch += 1
+              }
+              default {
+                throw "Unsupported release type '$releaseType'."
+              }
+            }
+
+            $releaseVersion = "$major.$minor.$patch"
+            $releaseCode = ($major * 10000) + ($minor * 100) + $patch
+            $releaseTag = "v$releaseVersion"
+            $branchName = "${{ github.ref_name }}"
+          }
+          else {
+            $releaseTag = "${{ github.ref_name }}"
+            $releaseVersion = $releaseTag -replace "^v", ""
+            $versionParts = $releaseVersion.Split(".")
+            if ($versionParts.Count -ne 3) {
+              throw "Expected semantic version format in git tag, got '$releaseVersion'."
+            }
+
+            $releaseCode = (([int]$versionParts[0]) * 10000) + (([int]$versionParts[1]) * 100) + ([int]$versionParts[2])
+          }
+
+          "value=$releaseVersion" >> $env:GITHUB_OUTPUT
+          "code=$releaseCode" >> $env:GITHUB_OUTPUT
+          "tag=$releaseTag" >> $env:GITHUB_OUTPUT
+
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            "branch=$branchName" >> $env:GITHUB_OUTPUT
+          }
+      
+      - name: Bump release version files
+        if: github.event_name == 'workflow_dispatch'
+        shell: pwsh
+        run: |
+          $releaseVersion = "${{ steps.version.outputs.value }}"
+          $releaseCode = "${{ steps.version.outputs.code }}"
+
+          function Update-FileValue {
+            param(
+              [string]$Path,
+              [string]$Pattern,
+              [string]$Replacement
+            )
+
+            $content = Get-Content -Path $Path -Raw
+            $updated = [regex]::Replace($content, $Pattern, $Replacement)
+
+            if ($content -eq $updated) {
+              throw "No changes applied to $Path for pattern $Pattern"
+            }
+
+            Set-Content -Path $Path -Value $updated -NoNewline
+          }
+
+          Update-FileValue -Path "RetroTouchPlayer/Player.ini" -Pattern "(?m)^Version=.*$" -Replacement "Version=$releaseVersion"
+          Update-FileValue -Path "RetroTouchPlayer/@Resources/Variables.inc" -Pattern "(?m)^SkinVersionCode=.*$" -Replacement "SkinVersionCode=$releaseCode"
+          Update-FileValue -Path "RetroTouchPlayer/@Resources/Variables.inc" -Pattern "(?m)^SkinVersionLabel=.*$" -Replacement "SkinVersionLabel=$releaseVersion"
+          Update-FileValue -Path "latest.ini" -Pattern "(?m)^VersionCode=.*$" -Replacement "VersionCode=$releaseCode"
+          Update-FileValue -Path "latest.ini" -Pattern "(?m)^VersionLabel=.*$" -Replacement "VersionLabel=$releaseVersion"
+          Update-FileValue -Path "RMSKIN.ini" -Pattern "(?m)^Version=.*$" -Replacement "Version=$releaseVersion"
+
+      - name: Commit version bump
+        if: github.event_name == 'workflow_dispatch'
+        shell: pwsh
+        run: |
+          $releaseVersion = "${{ steps.version.outputs.value }}"
+          $branchName = "${{ steps.version.outputs.branch }}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add RetroTouchPlayer/Player.ini RetroTouchPlayer/@Resources/Variables.inc latest.ini RMSKIN.ini
+          git commit -m "Release v$releaseVersion"
+          git push origin HEAD:$branchName
 
       - name: Prepare RMSKIN package layout
         shell: pwsh
@@ -23,12 +143,20 @@ jobs:
           Copy-Item -Path "RetroTouchPlayer" -Destination "build/package/Skins/RetroTouchPlayer" -Recurse -Force
           Copy-Item -Path "RMSKIN.ini" -Destination "build/package/RMSKIN.ini" -Force
 
-      - name: Derive package version
-        id: version
+      - name: Create release tag
+        if: github.event_name == 'workflow_dispatch'
         shell: pwsh
         run: |
-          $releaseVersion = "${{ github.ref_name }}" -replace "^v", ""
-          "value=$releaseVersion" >> $env:GITHUB_OUTPUT
+          $releaseTag = "${{ steps.version.outputs.tag }}"
+          git fetch --tags --force
+
+          git ls-remote --exit-code --tags origin "refs/tags/$releaseTag" *> $null
+          if ($LASTEXITCODE -eq 0) {
+            throw "Tag $releaseTag already exists on origin."
+          }
+
+          git tag $releaseTag
+          git push origin $releaseTag
 
       - name: Build .rmskin package
         id: builder
@@ -50,4 +178,5 @@ jobs:
         with:
           files: build/dist/RetroTouchPlayer.rmskin
           generate_release_notes: true
-          name: RetroTouchPlayer ${{ github.ref_name }}
+          name: RetroTouchPlayer ${{ steps.version.outputs.tag }}
+          tag_name: ${{ steps.version.outputs.tag }}

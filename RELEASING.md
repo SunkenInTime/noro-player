@@ -2,21 +2,14 @@
 
 This skin shows an in-app `UPDATE` badge when `latest.ini` advertises a newer `VersionCode` than the installed skin.
 
-## Files to bump for each release
+## Release version files
 
-Update these files to the same release version before tagging:
+These files stay in sync for every release:
 
 - `RetroTouchPlayer/Player.ini`
-  - `[Metadata]`
-  - `Version=1.0.0`
 - `RetroTouchPlayer/@Resources/Variables.inc`
-  - `SkinVersionCode=10000`
-  - `SkinVersionLabel=1.0.0`
 - `latest.ini`
-  - `VersionCode=10000`
-  - `VersionLabel=1.0.0`
 - `RMSKIN.ini`
-  - `Version=1.0.0`
 
 ## Version format
 
@@ -27,7 +20,33 @@ Use a monotonically increasing `VersionCode` so update checks always compare cle
 
 ## Publish a release
 
-1. Commit the version bump.
+### Easiest way: Run workflow button
+
+In GitHub, open the `Actions` tab, choose `Release Rainmeter Skin`, click `Run workflow`, and choose one of:
+
+- `patch`
+- `minor`
+- `major`
+
+The workflow will:
+
+1. Read the current version from `latest.ini`.
+2. Calculate the next semantic version.
+3. Update `Player.ini`, `Variables.inc`, `latest.ini`, and `RMSKIN.ini`.
+4. Commit that version bump back to the selected branch.
+5. Create the matching tag, such as `v1.0.1`.
+6. Build `RetroTouchPlayer.rmskin`.
+7. Publish the GitHub Release and upload the fixed asset filename.
+
+Examples:
+
+- `patch`: `1.0.0` -> `1.0.1`
+- `minor`: `1.0.1` -> `1.1.0`
+- `major`: `1.1.3` -> `2.0.0`
+
+### CLI way: push a tag manually
+
+1. Manually bump the release version files.
 2. Create a tag that matches the release version, such as `v1.0.1`.
 3. Push the commit and tag to GitHub.
 
