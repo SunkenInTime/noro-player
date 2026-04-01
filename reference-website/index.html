@@ -79,6 +79,10 @@
             animation: none;
         }
 
+        .screen-visual.paused {
+            filter: grayscale(1);
+        }
+
         .overlay-top {
             position: relative;
             z-index: 10;
@@ -402,12 +406,15 @@
                 playIcon.classList.add('hidden');
                 pauseIcon.classList.remove('hidden');
                 visual.classList.add('playing');
+                visual.classList.remove('paused');
                 dot.style.display = 'inline-block';
                 statusLabel.innerText = "Playing";
             } else {
                 playIcon.classList.remove('hidden');
                 pauseIcon.classList.add('hidden');
                 visual.classList.remove('playing');
+                if (audio.src) visual.classList.add('paused');
+                else visual.classList.remove('paused');
                 dot.style.display = 'none';
                 statusLabel.innerText = audio.src ? "Paused" : "Standby";
             }
