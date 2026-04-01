@@ -10,7 +10,7 @@ ShellWidth=340
 ShellHeight=356
 ShellRadius=51
 ; Full-skin grain overlay (Player.ini GrainOverlay); 0-255
-GrainAlpha=0
+GrainAlpha=230
 
 ScreenX=14
 ScreenY=14
@@ -20,11 +20,10 @@ ScreenHeight=188
 ScreenRadiusTop=36
 ScreenRadiusBottom=4
 
-; Reference .song-title: max-width 240px, padding 5px 16px, pill radius
-TitleCapsuleX=50
-TitleCapsuleY=28
-TitleCapsuleWidth=240
-TitleCapsuleHeight=28
+; Track title: inset readout on the screen (same horizontal padding as bottom row: ElapsedX - ScreenX)
+TitleAreaX=12
+TitleAreaY=28
+TitleAreaWidth=288
 
 ; Bottom overlay row: aligned with reference padding (~14px from screen bottom)
 InfoY=180
@@ -59,9 +58,6 @@ ScreenHighlight=255,255,255,26
 ScreenFallback=0,0,0,255
 
 GridColor=255,255,255,10
-; Reference .song-title: bg rgba(0,0,0,0.25), border rgba(255,255,255,0.08)
-CapsuleFill=0,0,0,64
-CapsuleStroke=255,255,255,20
 
 TextColor=255,255,255,255
 IconColor=208,208,208,255
