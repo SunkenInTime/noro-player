@@ -63,7 +63,14 @@ ScreenStroke=0,0,0,255
 ScreenHighlight=255,255,255,26
 ScreenFallback=0,0,0,255
 
-GridColor=255,255,255,10
+; Phosphor-green grid (stronger cell lines; pairs with Cover VFD tint)
+GridColor=35,180,135,85
+
+; Album art: VFD phosphor via ColorMatrix on [CoverMeter] (luminance weights × RGB 56,255,208). Overrides ImageTint/ImageAlpha.
+; Tweak overall cover opacity: ColorMatrix4 alpha column (1 = opaque).
+CoverVFDMatrixAlpha=0.902
+; Pixel block size (logical pixels). Cover is drawn at ScreenWidth/block × ScreenHeight/block then scaled up. Use 1 for no pixelation.
+CoverPixelBlock=8
 
 TextColor=255,255,255,255
 IconColor=208,208,208,255
